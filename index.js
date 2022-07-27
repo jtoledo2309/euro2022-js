@@ -1,4 +1,6 @@
 
+// Practica para generar los playoff de una EUROCOPA
+
 class Team {
     constructor(name, group){
         this.name = name
@@ -42,20 +44,27 @@ Array.prototype.shuffle = function () {
     }
     return this;
 }
-//Funcion para desordenar los strings dentro de un array y generarme un nuevo array con los dos primeros strings resultantes
-function elegirGanador (array) {
-    const arrayCopia = array.shuffle()
-    const arrayGanadores =[arrayCopia[0], arrayCopia[1]]
+
+//Funcion para desordenar los strings de cada array de grupos y generarme un nuevo array con los dos primeros strings resultantes
+function elegirGanador (groups) {
+    const arrayCopia = groups.shuffle()
+    const arrayGanadores = [arrayCopia[0], arrayCopia[1]]
     return arrayGanadores
+    /* Otra forma de hacerlo
+    groups.shuffle()
+    return [groups[0], groups[1]]
+    */
 }
 
-//El torneo estará compuesot por los 2 primeros eqipos de cada array
+//El torneo estará compuesot por los 2 primeros eqipos de cada array de grupos
 const torneoTeams = [
     ...elegirGanador(groupA),
     ...elegirGanador(groupB),
     ...elegirGanador(groupC),
     ...elegirGanador(groupD)
 ]
+
+//Nombrar a que corresponde cada posicion del array para mostrar mas adelante campeon y subcampeon de cada grupo
 const campeonA = torneoTeams[0]
 const subcampeonA = torneoTeams[1]
 const campeonB = torneoTeams[2]
@@ -68,20 +77,24 @@ const subcampeonD = torneoTeams[7]
 //Bloque para la funcion de jugar partidos
 
 function partido (teamA, teamB) {
-    let goalsA = generateGoals(teamA.name)
-    let goalsB = generateGoals(teamB.name)
-    let ganadorPartido = undefined
+    let goalsA
+    let goalsB
+    let ganadorPartido
 
+    //No puede haber empate en los resultados
     while (goalsA === goalsB){
          goalsA = generateGoals(teamA.name)
          goalsB = generateGoals(teamB.name)
     }
     
+    //Asignar el ganador del partido el equipo con mas goles
     if(goalsA > goalsB){
          ganadorPartido = teamA
     } else {
          ganadorPartido = teamB
     }
+
+    // const ganadorPartido = goalsA > goalsB ? teamA : teamB
 
     console.log(`${teamA.name} ${goalsA} - ${goalsB} ${teamB.name} => ${ganadorPartido.name}`)
 
@@ -92,40 +105,49 @@ function generateGoals(){
     return Math.floor(Math.random()*7)
 }
 
+// Funcion para los cuartos, de aqui obtengo los 4 semifinalistas y los meto en un array que utilizare en la funcion de semis
+function jugarCuartos(torneoTeams){
+    const semifinalista1 = partido(torneoTeams[0],torneoTeams[3])
+    const semifinalista2 = partido(torneoTeams[2],torneoTeams[1])
+    const semifinalista3 = partido(torneoTeams[4],torneoTeams[7])
+    const semifinalista4 = partido(torneoTeams[6],torneoTeams[5])
 
-function jugarCuartos(array){
-
-    partido(array[0],array[3])
-    partido(array[2],array[1])
-    partido(array[4],array[7])
-    partido(array[6],array[5])
+    return [semifinalista1, semifinalista2,semifinalista3,semifinalista4]
 }
 
-/*
-let semisArray= []
 
-function jugarCuartos(array, semisArray){
+/*
+function jugarCuartos(array){
+    let semisTeams= []
 
     semisTeams.push(partido(array[0],array[3]))
     semisTeams.push(partido(array[2],array[1]))
     semisTeams.push(partido(array[4],array[7]))
     semisTeams.push(partido(array[6],array[5]))
 
-    return semisArray
+    return semisTeams
+}
 */
 
+//Funcion para jugar las semifinales y determinar los equipos que pasan a la final 
 function jugarSemis(array){
-    partido(array[0], array[2])
-    partido(array[1], array[3])
+    const finalista1 = partido(array[0], array[2])
+    const finalista2 = partido(array[1], array[3])
+
+    return [finalista1, finalista2]
 }
 
+//Funcion para jugar la final y mostar el ganador del torneo
 function jugarFinal(array){
-    partido(array[0], array[1])
+    const ganadorTorneo = partido(array[0], array[1])
 
-    console.log(`XXXX ganador del torneo`)
+    console.log(`== ${ganadorTorneo.name} campeona de la EURO WOMEN'S CUP ==`)
 }
 
-console.log(torneoTeams)
+
+//console.log(torneoTeams)
+
+//Mostrar los equipos que han pasado de cada grupo
 console.log('================================================')
 console.log('==== Comienzan las eliminatorias del torneo ====')
 console.log('================================================')
@@ -133,8 +155,16 @@ console.log(`Grupo A: ${campeonA.name} , ${subcampeonA.name}`)
 console.log(`Grupo B: ${campeonB.name} , ${subcampeonB.name}`)
 console.log(`Grupo C: ${campeonC.name} , ${subcampeonC.name}`)
 console.log(`Grupo D: ${campeonD.name} , ${subcampeonD.name}`)
-//mostrarGanadores(torneoTeams)
+
+//Fases eliminatorias
 console.log('')
 console.log('==== CUARTOS DE FINAL ====')
+const semisTeams = jugarCuartos(torneoTeams)
 
-jugarCuartos(torneoTeams)
+console.log('')
+console.log('==== SEMIFINALES ====')
+const finalTeams = jugarSemis (semisTeams)
+
+console.log('')
+console.log('==== FINAL ====')
+jugarFinal(finalTeams)
