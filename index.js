@@ -134,7 +134,17 @@ function jugarSemis(array){
     const finalista1 = partido(array[0], array[2])
     const finalista2 = partido(array[1], array[3])
 
-    return [finalista1, finalista2]
+    const equiposFinal = [finalista1, finalista2]
+
+    const equiposConsolacion = array.filter(equipos => (!equiposFinal.includes(equipos)))
+
+    console.log('')
+    console.log('=== Partido 3 y 4 PUESTO ===')
+    const partidoConsolacion = partido(equiposConsolacion[0], equiposConsolacion[1])
+
+    //console.log(`Los equipos que no pasan a la final son ${equiposConsolacion[0].name} y ${equiposConsolacion[1].name}`)
+
+    return equiposFinal
 }
 
 //Funcion para jugar la final y mostar el ganador del torneo
